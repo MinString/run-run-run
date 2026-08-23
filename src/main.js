@@ -31,7 +31,9 @@ function create() {
 
   const platforms = createLevel(scene);
 
-  player = scene.physics.add.rectangle(startPoint.x, startPoint.y, 32, 48, 0xffffff);
+  // Phaser Arcade Physics does not provide physics.add.rectangle().
+  // Create the display object first, then attach a physics body to it.
+  player = scene.add.rectangle(startPoint.x, startPoint.y, 32, 48, 0xffffff);
   scene.physics.add.existing(player);
   player.body.setCollideWorldBounds(true);
 
@@ -57,7 +59,7 @@ function create() {
   scene.physics.add.collider(enemy, platforms[0]);
   scene.physics.add.overlap(player, enemy, () => restart(scene));
 
-  const flag = scene.physics.add.rectangle(2200, 350, 20, 80, 0xff0000);
+  const flag = scene.add.rectangle(2200, 350, 20, 80, 0xff0000);
   scene.physics.add.existing(flag, true);
   scene.physics.add.overlap(player, flag, () => console.log('You win!'));
 
