@@ -15,12 +15,10 @@ const config = {
   height: GAME_HEIGHT,
   backgroundColor: '#87ceeb',
   scale: {
-    mode: Phaser.Scale.FIT,
+    mode: Phaser.Scale.RESIZE,
     autoCenter: Phaser.Scale.CENTER_BOTH,
-    width: GAME_WIDTH,
-    height: GAME_HEIGHT,
-    min: { width: 320, height: 180 },
-    max: { width: 1920, height: 1080 }
+    width: window.innerWidth,
+    height: window.innerHeight
   },
   physics: {
     default: 'arcade',
@@ -50,9 +48,7 @@ function create() {
   scene.physics.add.existing(player);
   player.body.setCollideWorldBounds(true);
 
-  platforms.forEach(platform => {
-    scene.physics.add.collider(player, platform);
-  });
+  platforms.forEach(platform => scene.physics.add.collider(player, platform));
 
   const coinList = [
     createCoin(scene, 500, 220),
@@ -81,6 +77,11 @@ function create() {
   scene.cameras.main.startFollow(player, true);
   cursors = scene.input.keyboard.createCursorKeys();
   keys = scene.input.keyboard.addKeys('W,A,S,D');
+
+  // Resize the camera viewport with the browser window.
+  scene.scale.on('resize', (gameSize) => {
+    scene.cameras.main.setSize(gameSize.width, gameSize.height);
+  });
 }
 
 function restart(scene) {
@@ -100,9 +101,7 @@ function update() {
   else if (right) player.body.setVelocityX(220);
   else player.body.setVelocityX(0);
 
-  if (jump && player.body.blocked.down) {
-    player.body.setVelocityY(-450);
-  }
+  if (jump && player.body.blocked.down) player.body.setVelocityY(-450);
 
   if (player.y > WORLD_HEIGHT + 50) restart(this);
 }
