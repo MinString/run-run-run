@@ -3,10 +3,25 @@ import { createEnemy } from './enemy.js';
 import { createHUD } from './ui.js';
 import { createCoin } from './coin.js';
 
+const GAME_WIDTH = 800;
+const GAME_HEIGHT = 450;
+const WORLD_WIDTH = 2400;
+const WORLD_HEIGHT = 450;
+
 const config = {
   type: Phaser.AUTO,
-  width: 800,
-  height: 450,
+  parent: 'game',
+  width: GAME_WIDTH,
+  height: GAME_HEIGHT,
+  backgroundColor: '#87ceeb',
+  scale: {
+    mode: Phaser.Scale.FIT,
+    autoCenter: Phaser.Scale.CENTER_BOTH,
+    width: GAME_WIDTH,
+    height: GAME_HEIGHT,
+    min: { width: 320, height: 180 },
+    max: { width: 1920, height: 1080 }
+  },
   physics: {
     default: 'arcade',
     arcade: { gravity: { y: 900 }, debug: false }
@@ -19,20 +34,18 @@ let cursors;
 let keys;
 let coins = 0;
 let hud;
-let startPoint = { x: 120, y: 300 };
+const startPoint = { x: 120, y: 300 };
 
 new Phaser.Game(config);
 
 function create() {
   const scene = this;
 
-  scene.physics.world.setBounds(0, 0, 2400, 450);
-  scene.cameras.main.setBounds(0, 0, 2400, 450);
+  scene.physics.world.setBounds(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
+  scene.cameras.main.setBounds(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
 
   const platforms = createLevel(scene);
 
-  // Phaser Arcade Physics does not provide physics.add.rectangle().
-  // Create the display object first, then attach a physics body to it.
   player = scene.add.rectangle(startPoint.x, startPoint.y, 32, 48, 0xffffff);
   scene.physics.add.existing(player);
   player.body.setCollideWorldBounds(true);
@@ -77,6 +90,8 @@ function restart(scene) {
 }
 
 function update() {
+  if (!player || !cursors || !keys) return;
+
   const left = cursors.left.isDown || keys.A.isDown;
   const right = cursors.right.isDown || keys.D.isDown;
   const jump = cursors.up.isDown || keys.W.isDown;
@@ -89,5 +104,5 @@ function update() {
     player.body.setVelocityY(-450);
   }
 
-  if (player.y > 500) restart(this);
+  if (player.y > WORLD_HEIGHT + 50) restart(this);
 }
