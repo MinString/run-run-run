@@ -2,38 +2,37 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Run Run Run</title>
 <style>
-  html, body {
-    margin: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    background: #111;
+  html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background: #111; touch-action: none; }
+  body { position: relative; }
+  #game { width: 100vw; height: 100vh; }
+  canvas { display: block; width: 100%; height: 100%; }
+  #touch-controls { position: fixed; inset: 0; pointer-events: none; z-index: 10; }
+  .touch-btn {
+    position: absolute; width: clamp(58px, 13vw, 92px); height: clamp(58px, 13vw, 92px);
+    border: 2px solid rgba(255,255,255,.55); border-radius: 50%;
+    background: rgba(30,30,30,.42); color: white; font-size: clamp(24px, 6vw, 40px);
+    display: flex; align-items: center; justify-content: center; user-select: none;
+    -webkit-user-select: none; -webkit-touch-callout: none; pointer-events: auto;
+    backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
   }
-  body {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  #game {
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  canvas {
-    display: block;
-    max-width: 100vw;
-    max-height: 100vh;
-  }
+  .touch-btn:active { background: rgba(255,255,255,.32); transform: scale(.94); }
+  #left { left: max(18px, env(safe-area-inset-left)); bottom: max(24px, env(safe-area-inset-bottom)); }
+  #right { left: calc(max(18px, env(safe-area-inset-left)) + clamp(68px, 15vw, 105px)); bottom: max(24px, env(safe-area-inset-bottom)); }
+  #jump { right: max(24px, env(safe-area-inset-right)); bottom: max(24px, env(safe-area-inset-bottom)); }
+  @media (hover: hover) and (pointer: fine) { #touch-controls { display: none; } }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.js"></script>
 </head>
 <body>
 <div id="game"></div>
+<div id="touch-controls" aria-label="触摸控制">
+  <div id="left" class="touch-btn">◀</div>
+  <div id="right" class="touch-btn">▶</div>
+  <div id="jump" class="touch-btn">▲</div>
+</div>
 <script type="module" src="src/main.js"></script>
 </body>
 </html>
