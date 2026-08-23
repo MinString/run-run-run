@@ -1,6 +1,7 @@
 import { createLevel } from './level.js';
 import { createEnemy } from './enemy.js';
 import { createHUD } from './ui.js';
+import { createCoin } from './coin.js';
 
 const config = {
   type: Phaser.AUTO,
@@ -16,6 +17,8 @@ const config = {
 let player;
 let cursors;
 let keys;
+let coins = 0;
+let hud;
 let startPoint = { x: 120, y: 300 };
 
 new Phaser.Game(config);
@@ -36,6 +39,20 @@ function create() {
     scene.physics.add.collider(player, platform);
   });
 
+  const coinList = [
+    createCoin(scene, 500, 220),
+    createCoin(scene, 1000, 300),
+    createCoin(scene, 1500, 230)
+  ];
+
+  coinList.forEach(coin => {
+    scene.physics.add.overlap(player, coin, () => {
+      coin.destroy();
+      coins++;
+      if (hud) hud.setText(`Coins: ${coins}`);
+    });
+  });
+
   const enemy = createEnemy(scene, 900, 350);
   scene.physics.add.collider(enemy, platforms[0]);
   scene.physics.add.overlap(player, enemy, () => restart(scene));
@@ -44,7 +61,7 @@ function create() {
   scene.physics.add.existing(flag, true);
   scene.physics.add.overlap(player, flag, () => console.log('You win!'));
 
-  createHUD(scene);
+  hud = createHUD(scene);
 
   scene.cameras.main.startFollow(player, true);
   cursors = scene.input.keyboard.createCursorKeys();
@@ -58,8 +75,6 @@ function restart(scene) {
 }
 
 function update() {
-  if (!player) return;
-
   const left = cursors.left.isDown || keys.A.isDown;
   const right = cursors.right.isDown || keys.D.isDown;
   const jump = cursors.up.isDown || keys.W.isDown;
