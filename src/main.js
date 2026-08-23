@@ -14,7 +14,7 @@ const config = {
   width: GAME_WIDTH,
   height: GAME_HEIGHT,
   backgroundColor: '#87ceeb',
-  scale: { mode: Phaser.Scale.RESIZE, autoCenter: Phaser.Scale.CENTER_BOTH, width: window.innerWidth, height: window.innerHeight },
+  scale: { mode: Phaser.Scale.RESIZE, width: window.innerWidth, height: window.innerHeight },
   physics: { default: 'arcade', arcade: { gravity: { y: 900 }, debug: false } },
   scene: { create, update }
 };
@@ -54,7 +54,10 @@ function create() {
   cursors = scene.input.keyboard.createCursorKeys();
   keys = scene.input.keyboard.addKeys('W,A,S,D');
   setupTouchControls();
-  scene.scale.on('resize', gameSize => scene.cameras.main.setSize(gameSize.width, gameSize.height));
+
+  scene.scale.on('resize', gameSize => {
+    scene.cameras.main.setSize(gameSize.width, gameSize.height);
+  });
 }
 
 function setupTouchControls() {
@@ -65,12 +68,13 @@ function setupTouchControls() {
     button.addEventListener('pointerdown', e => { e.preventDefault(); set(true); button.setPointerCapture?.(e.pointerId); });
     button.addEventListener('pointerup', e => { e.preventDefault(); set(false); });
     button.addEventListener('pointercancel', () => set(false));
-    button.addEventListener('pointerleave', e => { if (e.buttons === 0) set(false); });
   });
 }
 
 function restart(scene) {
-  player.x = startPoint.x; player.y = startPoint.y; player.body.setVelocity(0, 0);
+  player.x = startPoint.x;
+  player.y = startPoint.y;
+  player.body.setVelocity(0, 0);
 }
 
 function update() {
@@ -82,6 +86,7 @@ function update() {
   if (left) player.body.setVelocityX(-220);
   else if (right) player.body.setVelocityX(220);
   else player.body.setVelocityX(0);
+
   if (jump && player.body.blocked.down) player.body.setVelocityY(-450);
   if (player.y > WORLD_HEIGHT + 50) restart(this);
 }
