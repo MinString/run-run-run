@@ -14,54 +14,31 @@ const config = {
   width: GAME_WIDTH,
   height: GAME_HEIGHT,
   backgroundColor: '#87ceeb',
-  scale: {
-    mode: Phaser.Scale.RESIZE,
-    autoCenter: Phaser.Scale.CENTER_BOTH,
-    width: window.innerWidth,
-    height: window.innerHeight
-  },
-  physics: {
-    default: 'arcade',
-    arcade: { gravity: { y: 900 }, debug: false }
-  },
+  scale: { mode: Phaser.Scale.RESIZE, autoCenter: Phaser.Scale.CENTER_BOTH, width: window.innerWidth, height: window.innerHeight },
+  physics: { default: 'arcade', arcade: { gravity: { y: 900 }, debug: false } },
   scene: { create, update }
 };
 
-let player;
-let cursors;
-let keys;
+let player, cursors, keys, hud;
 let coins = 0;
-let hud;
+let touch = { left: false, right: false, jump: false };
 const startPoint = { x: 120, y: 300 };
 
 new Phaser.Game(config);
 
 function create() {
   const scene = this;
-
   scene.physics.world.setBounds(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
   scene.cameras.main.setBounds(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
 
   const platforms = createLevel(scene);
-
   player = scene.add.rectangle(startPoint.x, startPoint.y, 32, 48, 0xffffff);
   scene.physics.add.existing(player);
   player.body.setCollideWorldBounds(true);
-
   platforms.forEach(platform => scene.physics.add.collider(player, platform));
 
-  const coinList = [
-    createCoin(scene, 500, 220),
-    createCoin(scene, 1000, 300),
-    createCoin(scene, 1500, 230)
-  ];
-
-  coinList.forEach(coin => {
-    scene.physics.add.overlap(player, coin, () => {
-      coin.destroy();
-      coins++;
-      if (hud) hud.setText(`Coins: ${coins}`);
-    });
+  [createCoin(scene, 500, 220), createCoin(scene, 1000, 300), createCoin(scene, 1500, 230)].forEach(coin => {
+    scene.physics.add.overlap(player, coin, () => { coin.destroy(); coins++; if (hud) hud.setText(`Coins: ${coins}`); });
   });
 
   const enemy = createEnemy(scene, 900, 350);
@@ -73,35 +50,38 @@ function create() {
   scene.physics.add.overlap(player, flag, () => console.log('You win!'));
 
   hud = createHUD(scene);
-
   scene.cameras.main.startFollow(player, true);
   cursors = scene.input.keyboard.createCursorKeys();
   keys = scene.input.keyboard.addKeys('W,A,S,D');
+  setupTouchControls();
+  scene.scale.on('resize', gameSize => scene.cameras.main.setSize(gameSize.width, gameSize.height));
+}
 
-  // Resize the camera viewport with the browser window.
-  scene.scale.on('resize', (gameSize) => {
-    scene.cameras.main.setSize(gameSize.width, gameSize.height);
+function setupTouchControls() {
+  ['left', 'right', 'jump'].forEach(name => {
+    const button = document.getElementById(name);
+    if (!button) return;
+    const set = value => { touch[name] = value; };
+    button.addEventListener('pointerdown', e => { e.preventDefault(); set(true); button.setPointerCapture?.(e.pointerId); });
+    button.addEventListener('pointerup', e => { e.preventDefault(); set(false); });
+    button.addEventListener('pointercancel', () => set(false));
+    button.addEventListener('pointerleave', e => { if (e.buttons === 0) set(false); });
   });
 }
 
 function restart(scene) {
-  player.x = startPoint.x;
-  player.y = startPoint.y;
-  player.body.setVelocity(0, 0);
+  player.x = startPoint.x; player.y = startPoint.y; player.body.setVelocity(0, 0);
 }
 
 function update() {
   if (!player || !cursors || !keys) return;
-
-  const left = cursors.left.isDown || keys.A.isDown;
-  const right = cursors.right.isDown || keys.D.isDown;
-  const jump = cursors.up.isDown || keys.W.isDown;
+  const left = cursors.left.isDown || keys.A.isDown || touch.left;
+  const right = cursors.right.isDown || keys.D.isDown || touch.right;
+  const jump = cursors.up.isDown || keys.W.isDown || touch.jump;
 
   if (left) player.body.setVelocityX(-220);
   else if (right) player.body.setVelocityX(220);
   else player.body.setVelocityX(0);
-
   if (jump && player.body.blocked.down) player.body.setVelocityY(-450);
-
   if (player.y > WORLD_HEIGHT + 50) restart(this);
 }
