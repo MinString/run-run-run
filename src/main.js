@@ -1,5 +1,6 @@
 import { createLevel } from './level.js';
 import { createEnemy } from './enemy.js';
+import { createHUD } from './ui.js';
 
 const config = {
   type: Phaser.AUTO,
@@ -14,6 +15,7 @@ const config = {
 
 let player;
 let cursors;
+let keys;
 let startPoint = { x: 120, y: 300 };
 
 new Phaser.Game(config);
@@ -42,8 +44,11 @@ function create() {
   scene.physics.add.existing(flag, true);
   scene.physics.add.overlap(player, flag, () => console.log('You win!'));
 
+  createHUD(scene);
+
   scene.cameras.main.startFollow(player, true);
   cursors = scene.input.keyboard.createCursorKeys();
+  keys = scene.input.keyboard.addKeys('W,A,S,D');
 }
 
 function restart(scene) {
@@ -55,11 +60,15 @@ function restart(scene) {
 function update() {
   if (!player) return;
 
-  if (cursors.left.isDown) player.body.setVelocityX(-200);
-  else if (cursors.right.isDown) player.body.setVelocityX(200);
+  const left = cursors.left.isDown || keys.A.isDown;
+  const right = cursors.right.isDown || keys.D.isDown;
+  const jump = cursors.up.isDown || keys.W.isDown;
+
+  if (left) player.body.setVelocityX(-220);
+  else if (right) player.body.setVelocityX(220);
   else player.body.setVelocityX(0);
 
-  if (cursors.up.isDown && player.body.blocked.down) {
+  if (jump && player.body.blocked.down) {
     player.body.setVelocityY(-450);
   }
 
