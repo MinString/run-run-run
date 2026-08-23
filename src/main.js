@@ -21,7 +21,8 @@ const config = {
 
 let player, cursors, keys, hud;
 let coins = 0;
-let touch = { left: false, right: false, jump: false };
+const touch = { left: false, right: false, jump: false };
+const activePointers = new Map();
 const startPoint = { x: 120, y: 300 };
 
 new Phaser.Game(config);
@@ -55,20 +56,57 @@ function create() {
   keys = scene.input.keyboard.addKeys('W,A,S,D');
   setupTouchControls();
 
-  scene.scale.on('resize', gameSize => {
-    scene.cameras.main.setSize(gameSize.width, gameSize.height);
-  });
+  scene.scale.on('resize', gameSize => scene.cameras.main.setSize(gameSize.width, gameSize.height));
 }
 
 function setupTouchControls() {
   ['left', 'right', 'jump'].forEach(name => {
     const button = document.getElementById(name);
     if (!button) return;
-    const set = value => { touch[name] = value; };
-    button.addEventListener('pointerdown', e => { e.preventDefault(); set(true); button.setPointerCapture?.(e.pointerId); });
-    button.addEventListener('pointerup', e => { e.preventDefault(); set(false); });
-    button.addEventListener('pointercancel', () => set(false));
+
+    const press = pointerId => {
+      activePointers.set(pointerId, name);
+      touch[name] = true;
+    };
+
+    const release = pointerId => {
+      if (activePointers.get(pointerId) !== name) return;
+      activePointers.delete(pointerId);
+      touch[name] = false;
+    };
+
+    // Pointer Events are used, but Firefox may cancel a pointer when the
+    // browser loses capture or when another pointer becomes active. Handle
+    // every termination path and never rely on pointerleave alone.
+    button.addEventListener('pointerdown', event => {
+      event.preventDefault();
+      press(event.pointerId);
+      try { button.setPointerCapture(event.pointerId); } catch (_) {}
+    }, { passive: false });
+
+    button.addEventListener('pointerup', event => {
+      event.preventDefault();
+      release(event.pointerId);
+      try { button.releasePointerCapture(event.pointerId); } catch (_) {}
+    }, { passive: false });
+
+    button.addEventListener('pointercancel', event => release(event.pointerId));
+    button.addEventListener('lostpointercapture', event => release(event.pointerId));
   });
+
+  // Safety net: if Firefox loses pointer events while the button is held,
+  // release all virtual keys when the page/window loses focus.
+  window.addEventListener('blur', clearTouch);
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) clearTouch();
+  });
+}
+
+function clearTouch() {
+  touch.left = false;
+  touch.right = false;
+  touch.jump = false;
+  activePointers.clear();
 }
 
 function restart(scene) {
@@ -83,8 +121,8 @@ function update() {
   const right = cursors.right.isDown || keys.D.isDown || touch.right;
   const jump = cursors.up.isDown || keys.W.isDown || touch.jump;
 
-  if (left) player.body.setVelocityX(-220);
-  else if (right) player.body.setVelocityX(220);
+  if (left && !right) player.body.setVelocityX(-220);
+  else if (right && !left) player.body.setVelocityX(220);
   else player.body.setVelocityX(0);
 
   if (jump && player.body.blocked.down) player.body.setVelocityY(-450);
