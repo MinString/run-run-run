@@ -8,6 +8,8 @@ func _physics_process(delta: float) -> void:
     if not is_on_floor():
         velocity.y += gravity * delta
 
+    # A/D: left/right movement. W/S are reserved for vertical controls;
+    # W also triggers jump as requested.
     var direction := Input.get_axis("move_left", "move_right")
     if direction != 0:
         velocity.x = direction * speed
