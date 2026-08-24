@@ -1,20 +1,17 @@
-# run-run-run
+# Run Run Run Pixel Assets
 
-一个正在改造成 2D 横版卷轴闯关小游戏的项目。
+Godot 4 pixel-art assets extracted from the approved asset atlas.
 
-## 当前版本
+- hero.png — protagonist
+- enemy.png — red slime enemy
+- coin.png — coin sprites
+- chest.png — treasure chest
+- terrain.png — grass/dirt terrain pieces
+- bg_sky.png — sky layer
+- bg_mountains.png — mountain/lake layer
+- bg_foreground.png — foreground vegetation layer
 
-- 网页运行
-- 使用 Phaser 3
-- 主角暂时使用矩形占位
-- 简易平台地图
-- 支持移动和跳跃
-
-## 计划
-
-- [x] 基础玩家控制
-- [x] 简易地图
-- [ ] 美术素材替换
-- [ ] 敌人系统
-- [ ] 关卡系统
-- [ ] 音效和动画
+Suggested Godot import:
+- Texture Filter: Nearest
+- Compression: Lossless
+- Use the three background images as TextureRect/Parallax2D layers.
