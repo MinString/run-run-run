@@ -19,16 +19,22 @@ size = Vector2(2400, 40)
 [node name="Main" type="Node2D"]
 
 [node name="Sky" type="Sprite2D" parent="."]
+z_index = -30
+texture_filter = 1
 texture = ExtResource("7_sky")
 position = Vector2(1200, 270)
 centered = true
 
 [node name="Mountains" type="Sprite2D" parent="."]
+z_index = -20
+texture_filter = 1
 texture = ExtResource("8_mountains")
 position = Vector2(1200, 330)
 centered = true
 
 [node name="Foreground" type="Sprite2D" parent="."]
+z_index = -10
+texture_filter = 1
 texture = ExtResource("9_foreground")
 position = Vector2(1200, 470)
 centered = true
@@ -40,15 +46,19 @@ position = Vector2(1200, 520)
 shape = SubResource("GroundShape")
 
 [node name="TerrainVisual" type="Sprite2D" parent="Ground"]
+z_index = 0
+texture_filter = 1
 texture = ExtResource("6_terrain")
 position = Vector2(0, -20)
 centered = true
 
 [node name="Player" type="CharacterBody2D" parent="."]
+z_index = 10
 position = Vector2(120, 450)
 script = ExtResource("1_player")
 
 [node name="Visual" type="Sprite2D" parent="Player"]
+texture_filter = 1
 texture = ExtResource("2_hero")
 centered = true
 
@@ -65,26 +75,36 @@ limit_right = 2400
 limit_bottom = 540
 
 [node name="Coin1" type="Sprite2D" parent="."]
+z_index = 12
+texture_filter = 1
 texture = ExtResource("4_coin")
 position = Vector2(500, 400)
 centered = true
 
 [node name="Coin2" type="Sprite2D" parent="."]
+z_index = 12
+texture_filter = 1
 texture = ExtResource("4_coin")
 position = Vector2(900, 300)
 centered = true
 
 [node name="Coin3" type="Sprite2D" parent="."]
+z_index = 12
+texture_filter = 1
 texture = ExtResource("4_coin")
 position = Vector2(1400, 250)
 centered = true
 
 [node name="Enemy" type="Sprite2D" parent="."]
+z_index = 11
+texture_filter = 1
 texture = ExtResource("3_enemy")
 position = Vector2(900, 450)
 centered = true
 
 [node name="Chest" type="Sprite2D" parent="."]
+z_index = 11
+texture_filter = 1
 texture = ExtResource("5_chest")
 position = Vector2(2150, 450)
 centered = true
