@@ -1,17 +1,13 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/player.gd" id="1_player"]
 [ext_resource type="Texture2D" path="res://hero.png" id="2_hero"]
-[ext_resource type="Texture2D" path="res://enemy.png" id="3_enemy"]
-[ext_resource type="Texture2D" path="res://coin.png" id="4_coin"]
-[ext_resource type="Texture2D" path="res://chest.png" id="5_chest"]
-[ext_resource type="Texture2D" path="res://terrain.png" id="6_terrain"]
-[ext_resource type="Texture2D" path="res://bg_sky.png" id="7_sky"]
-[ext_resource type="Texture2D" path="res://bg_mountains.png" id="8_mountains"]
-[ext_resource type="Texture2D" path="res://bg_foreground.png" id="9_foreground"]
+[ext_resource type="Texture2D" path="res://bg_sky.png" id="3_sky"]
+[ext_resource type="Texture2D" path="res://bg_mountains.png" id="4_mountains"]
+[ext_resource type="Texture2D" path="res://bg_foreground.png" id="5_foreground"]
 
 [sub_resource type="RectangleShape2D" id="PlayerShape"]
-size = Vector2(32, 48)
+size = Vector2(72, 96)
 
 [sub_resource type="RectangleShape2D" id="GroundShape"]
 size = Vector2(2400, 40)
@@ -19,19 +15,19 @@ size = Vector2(2400, 40)
 [node name="Main" type="Node2D"]
 
 [node name="Sky" type="Sprite2D" parent="."]
-texture = ExtResource("7_sky")
-position = Vector2(1200, 270)
-centered = true
+position = Vector2(480, 270)
+texture = ExtResource("3_sky")
+z_index = -30
 
 [node name="Mountains" type="Sprite2D" parent="."]
-texture = ExtResource("8_mountains")
-position = Vector2(1200, 330)
-centered = true
+position = Vector2(480, 270)
+texture = ExtResource("4_mountains")
+z_index = -20
 
 [node name="Foreground" type="Sprite2D" parent="."]
-texture = ExtResource("9_foreground")
-position = Vector2(1200, 470)
-centered = true
+position = Vector2(480, 270)
+texture = ExtResource("5_foreground")
+z_index = -10
 
 [node name="Ground" type="StaticBody2D" parent="."]
 position = Vector2(1200, 520)
@@ -39,18 +35,15 @@ position = Vector2(1200, 520)
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ground"]
 shape = SubResource("GroundShape")
 
-[node name="TerrainVisual" type="Sprite2D" parent="Ground"]
-texture = ExtResource("6_terrain")
-position = Vector2(0, -20)
-centered = true
-
 [node name="Player" type="CharacterBody2D" parent="."]
 position = Vector2(120, 450)
 script = ExtResource("1_player")
 
 [node name="Visual" type="Sprite2D" parent="Player"]
 texture = ExtResource("2_hero")
-centered = true
+hframes = 8
+frame = 0
+scale = Vector2(0.9, 0.9)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
 shape = SubResource("PlayerShape")
@@ -63,28 +56,3 @@ limit_left = 0
 limit_top = 0
 limit_right = 2400
 limit_bottom = 540
-
-[node name="Coin1" type="Sprite2D" parent="."]
-texture = ExtResource("4_coin")
-position = Vector2(500, 400)
-centered = true
-
-[node name="Coin2" type="Sprite2D" parent="."]
-texture = ExtResource("4_coin")
-position = Vector2(900, 300)
-centered = true
-
-[node name="Coin3" type="Sprite2D" parent="."]
-texture = ExtResource("4_coin")
-position = Vector2(1400, 250)
-centered = true
-
-[node name="Enemy" type="Sprite2D" parent="."]
-texture = ExtResource("3_enemy")
-position = Vector2(900, 450)
-centered = true
-
-[node name="Chest" type="Sprite2D" parent="."]
-texture = ExtResource("5_chest")
-position = Vector2(2150, 450)
-centered = true
